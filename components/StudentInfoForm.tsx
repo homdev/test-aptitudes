@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
+import { Loader2 } from 'lucide-react'
 
 export default function StudentInfoForm() {
   const [firstName, setFirstName] = useState('')
@@ -82,10 +83,16 @@ export default function StudentInfoForm() {
           <Button 
             onClick={handleSubmit}
             className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-            disabled={!firstName || !lastName}
-            loading={isLoading}
+            disabled={!firstName || !lastName || isLoading}
           >
-            Commencer le Test
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Chargement...
+              </>
+            ) : (
+              'Commencer le Test'
+            )}
           </Button>
         </CardFooter>
       </Card>

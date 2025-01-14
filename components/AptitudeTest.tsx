@@ -162,6 +162,206 @@ const questions = [
       "SEM"
     ],
     correctAnswer: "Blockchain"
+  },
+  {
+    question: "Quel est le rôle principal d'un CRM (Customer Relationship Management) ?",
+    options: [
+      "Automatiser les publicités sur les réseaux sociaux",
+      "Gérer les relations et les interactions avec les clients",
+      "Créer des campagnes publicitaires",
+      "Optimiser les performances des sites web"
+    ],
+    correctAnswer: "Gérer les relations et les interactions avec les clients"
+  },
+  {
+    question: "Le terme 'Mobile First' désigne :",
+    options: [
+      "L'optimisation des campagnes sur les réseaux sociaux",
+      "La priorité donnée à la conception pour les appareils mobiles",
+      "La création d'applications dédiées",
+      "L'analyse des performances mobiles"
+    ],
+    correctAnswer: "La priorité donnée à la conception pour les appareils mobiles"
+  },
+  {
+    question: "Quelle stratégie est la plus efficace pour un lancement rapide de produit ?",
+    options: [
+      "SEO",
+      "SEM",
+      "Marketing d'influence",
+      "Emailing"
+    ],
+    correctAnswer: "SEM"
+  },
+  {
+    question: "Quel est le principal indicateur de performance d'une landing page ?",
+    options: [
+      "Le temps passé sur la page",
+      "Le taux de conversion",
+      "Le nombre de clics sur les liens",
+      "Le nombre de partages sur les réseaux sociaux"
+    ],
+    correctAnswer: "Le taux de conversion"
+  },
+  {
+    question: "L'intelligence artificielle permet d'optimiser :",
+    options: [
+      "Les budgets publicitaires",
+      "Les campagnes de contenu viral",
+      "L'expérience utilisateur et la personnalisation",
+      "Les relations avec les investisseurs"
+    ],
+    correctAnswer: "L'expérience utilisateur et la personnalisation"
+  },
+  {
+    question: "La méthode A/B testing permet :",
+    options: [
+      "De tester deux variantes d'un contenu pour mesurer leur performance",
+      "D'automatiser les publicités sur les réseaux sociaux",
+      "De sécuriser les transactions en ligne",
+      "De gérer les relations clients"
+    ],
+    correctAnswer: "De tester deux variantes d'un contenu pour mesurer leur performance"
+  },
+  {
+    question: "Quel est l'avantage principal du marketing automation ?",
+    options: [
+      "Augmenter le budget marketing",
+      "Automatiser les tâches répétitives pour gagner du temps",
+      "Créer du contenu viral",
+      "Optimiser la sécurité des données"
+    ],
+    correctAnswer: "Automatiser les tâches répétitives pour gagner du temps"
+  },
+  {
+    question: "Le RGPD (Règlement Général sur la Protection des Données) est principalement lié :",
+    options: [
+      "À la création de contenu marketing",
+      "À la gestion et protection des données personnelles des utilisateurs",
+      "À l'analyse de performance des campagnes",
+      "À l'optimisation SEO"
+    ],
+    correctAnswer: "À la gestion et protection des données personnelles des utilisateurs"
+  },
+  {
+    question: "Quelle est la différence entre SEO et SEM ?",
+    options: [
+      "Le SEO est gratuit tandis que le SEM est payant",
+      "Le SEM se concentre uniquement sur les réseaux sociaux",
+      "Le SEO utilise l'intelligence artificielle, le SEM non",
+      "Le SEO est destiné aux grandes entreprises, le SEM aux PME"
+    ],
+    correctAnswer: "Le SEO est gratuit tandis que le SEM est payant"
+  },
+  {
+    question: "Quel est le rôle principal d'une stratégie de marketing d'influence ?",
+    options: [
+      "Créer des publicités payantes",
+      "Collaborer avec des influenceurs pour promouvoir une marque",
+      "Analyser le trafic web",
+      "Automatiser les campagnes marketing"
+    ],
+    correctAnswer: "Collaborer avec des influenceurs pour promouvoir une marque"
+  },
+  {
+    question: "Qu'est-ce que le taux de rebond (bounce rate) ?",
+    options: [
+      "Le pourcentage de visiteurs qui quittent le site après avoir vu une seule page",
+      "Le pourcentage de conversions sur un site",
+      "Le nombre total de visiteurs uniques",
+      "Le temps moyen passé sur le site"
+    ],
+    correctAnswer: "Le pourcentage de visiteurs qui quittent le site après avoir vu une seule page"
+  },
+  {
+    question: "Dans quel contexte utiliser un persona utilisateur ?",
+    options: [
+      "Pour optimiser les campagnes publicitaires",
+      "Pour créer une base de données de clients",
+      "Pour mieux comprendre les besoins et comportements des utilisateurs",
+      "Pour concevoir des newsletters"
+    ],
+    correctAnswer: "Pour mieux comprendre les besoins et comportements des utilisateurs"
+  },
+  {
+    question: "Quel outil est le plus couramment utilisé pour la création de rapports analytiques sur le trafic web ?",
+    options: [
+      "Adobe Photoshop",
+      "Google Analytics",
+      "Canva",
+      "Slack"
+    ],
+    correctAnswer: "Google Analytics"
+  },
+  {
+    question: "Quelle est la principale différence entre le marketing de contenu et le marketing d'influence ?",
+    options: [
+      "Le marketing de contenu est payant, le marketing d'influence est gratuit",
+      "Le marketing d'influence implique des collaborations avec des personnes influentes, le marketing de contenu se concentre sur la création de contenu utile",
+      "Le marketing de contenu utilise les médias traditionnels, le marketing d'influence est uniquement digital",
+      "Le marketing d'influence est destiné aux grandes entreprises"
+    ],
+    correctAnswer: "Le marketing d'influence implique des collaborations avec des personnes influentes, le marketing de contenu se concentre sur la création de contenu utile"
+  },
+  {
+    question: "Qu'est-ce que le taux de conversion dans le marketing digital ?",
+    options: [
+      "Le pourcentage de visiteurs qui achètent un produit ou complètent une action souhaitée",
+      "Le nombre total de visiteurs d'un site",
+      "Le taux de clics sur une annonce",
+      "Le pourcentage de pages visitées"
+    ],
+    correctAnswer: "Le pourcentage de visiteurs qui achètent un produit ou complètent une action souhaitée"
+  },
+  {
+    question: "Quelle est la meilleure pratique pour améliorer l'expérience utilisateur (UX) sur un site web ?",
+    options: [
+      "Ajouter plus de publicités",
+      "Réduire le temps de chargement des pages",
+      "Utiliser des pop-ups fréquents",
+      "Augmenter la complexité des formulaires"
+    ],
+    correctAnswer: "Réduire le temps de chargement des pages"
+  },
+  {
+    question: "Qu'est-ce qu'un CMS (Content Management System) ?",
+    options: [
+      "Un système de gestion de la relation client",
+      "Un logiciel permettant de créer et gérer du contenu digital",
+      "Un outil d'automatisation marketing",
+      "Un réseau social professionnel"
+    ],
+    correctAnswer: "Un logiciel permettant de créer et gérer du contenu digital"
+  },
+  {
+    question: "Quel est l'objectif principal d'un audit SEO ?",
+    options: [
+      "Augmenter le budget marketing",
+      "Identifier les erreurs techniques et opportunités d'optimisation pour améliorer le classement dans les moteurs de recherche",
+      "Créer des publicités payantes",
+      "Analyser les campagnes d'influence"
+    ],
+    correctAnswer: "Identifier les erreurs techniques et opportunités d'optimisation pour améliorer le classement dans les moteurs de recherche"
+  },
+  {
+    question: "Que signifie ROI dans le marketing digital ?",
+    options: [
+      "Return On Investment",
+      "Rate Of Interaction",
+      "Reach Of Influence",
+      "Retention Of Information"
+    ],
+    correctAnswer: "Return On Investment"
+  },
+  {
+    question: "Quelle est l'une des principales tendances du marketing digital en 2025 ?",
+    options: [
+      "Le retour des magazines papier",
+      "L'utilisation de l'IA pour personnaliser les expériences utilisateur",
+      "La suppression de toutes les publicités digitales",
+      "L'abandon des réseaux sociaux"
+    ],
+    correctAnswer: "L'utilisation de l'IA pour personnaliser les expériences utilisateur"
   }
 ]
 
