@@ -29,7 +29,7 @@ export async function GET() {
         student: true
       },
       orderBy: {
-        createdAt: 'desc'
+        score: 'desc'
       }
     })
     return NextResponse.json(results)

@@ -13,7 +13,9 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import TopPerformers from '@/components/TopPerformers'
 import Link from 'next/link'
+import { Crown, Medal } from 'lucide-react'
 
 interface TestResult {
   id: string
@@ -50,6 +52,19 @@ export default function ProfessorDashboard() {
     return <div className="p-8 text-center">Chargement...</div>
   }
 
+  const getRankBadge = (index: number) => {
+    switch (index) {
+      case 0:
+        return <Crown className="w-6 h-6 text-yellow-500" />
+      case 1:
+        return <Medal className="w-6 h-6 text-gray-400" />
+      case 2:
+        return <Medal className="w-6 h-6 text-amber-600" />
+      default:
+        return null
+    }
+  }
+
   return (
     <div className="p-8">
       <div className="flex justify-between items-center mb-6">
@@ -59,23 +74,33 @@ export default function ProfessorDashboard() {
         </Link>
       </div>
 
-      <Table>
-        <TableCaption>Résultats des tests d'aptitude des étudiants</TableCaption>
+      {results.length > 0 && (
+        <>
+          <h2 className="text-2xl font-semibold mb-4">Top 3 Performers</h2>
+          <TopPerformers performers={results.slice(0, 3)} />
+        </>
+      )}
+
+<Table>
+        <TableCaption>Classement complet des étudiants</TableCaption>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-[100px]">Rang</TableHead>
             <TableHead>Nom de l'étudiant</TableHead>
             <TableHead>Score</TableHead>
             <TableHead>Pourcentage</TableHead>
-            <TableHead>Date</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {results.map((result) => (
-            <TableRow key={result.id}>
+          {results.map((result, index) => (
+            <TableRow key={index} className={index < 3 ? 'font-semibold' : ''}>
+              <TableCell className="flex items-center space-x-2">
+                <span>{index + 1}</span>
+                {getRankBadge(index)}
+              </TableCell>
               <TableCell>{`${result.student.firstName} ${result.student.lastName}`}</TableCell>
               <TableCell>{result.score} / {result.totalQuestions}</TableCell>
               <TableCell>{((result.score / result.totalQuestions) * 100).toFixed(2)}%</TableCell>
-              <TableCell>{new Date(result.createdAt).toLocaleDateString()}</TableCell>
             </TableRow>
           ))}
         </TableBody>
