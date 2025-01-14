@@ -21,15 +21,26 @@ export default function HomePage() {
         <p className="text-xl md:text-2xl mb-8 max-w-2xl">
           Évaluez vos compétences en Communication Digitale et E-influence
         </p>
-        <Link href="/start">
-          <Button 
-            size="lg" 
-            className="bg-white text-purple-600 hover:bg-purple-100 transition-colors duration-300"
-          >
-            Commencer le Test
-            <ArrowRightIcon className="ml-2 h-5 w-5" />
-          </Button>
-        </Link>
+        <div className="flex space-x-4">
+          <Link href="/start">
+            <Button 
+              size="lg" 
+              className="bg-white text-purple-600 hover:bg-purple-100 transition-colors duration-300"
+            >
+              Commencer le Test
+              <ArrowRightIcon className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
+          <Link href="/dashboard">
+            <Button 
+              size="lg" 
+              variant="outline"
+              className="bg-transparent text-white border-white hover:bg-white hover:text-purple-600 transition-colors duration-300"
+            >
+              Tableau de Bord
+            </Button>
+          </Link>
+        </div>
       </motion.div>
       <motion.div
         initial={{ opacity: 0 }}

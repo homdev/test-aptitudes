@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const questions = [
   {
@@ -19,7 +20,8 @@ const questions = [
       "Une technique de publicité payante",
       "Un outil d'analyse de performance",
       "Une stratégie de communication interne"
-    ]
+    ],
+    correctAnswer: "La gestion de l'image d'une marque en ligne"
   },
   {
     question: "Qu'est-ce qu'un call-to-action (CTA) ?",
@@ -28,7 +30,8 @@ const questions = [
       "Une invitation à réaliser une action spécifique (exemple : cliquer)",
       "Un type de campagne d'acquisition payante",
       "Un outil d'automatisation marketing"
-    ]
+    ],
+    correctAnswer: "Une invitation à réaliser une action spécifique (exemple : cliquer)"
   },
   {
     question: "Quel outil est utilisé pour analyser les comportements des utilisateurs sur un site web ?",
@@ -37,7 +40,8 @@ const questions = [
       "Google Analytics",
       "Zoom",
       "Canva"
-    ]
+    ],
+    correctAnswer: "Google Analytics"
   },
   {
     question: "Une landing page efficace doit :",
@@ -46,7 +50,8 @@ const questions = [
       "Encourager les visiteurs à réaliser une action spécifique",
       "Avoir un design complexe",
       "Être optimisée uniquement pour le SEO"
-    ]
+    ],
+    correctAnswer: "Encourager les visiteurs à réaliser une action spécifique"
   },
   {
     question: "Quelle plateforme est la plus utilisée pour les campagnes d'influence ?",
@@ -55,7 +60,8 @@ const questions = [
       "TikTok",
       "Google+",
       "Slack"
-    ]
+    ],
+    correctAnswer: "TikTok"
   },
   {
     question: "Le marketing de contenu vise à :",
@@ -64,7 +70,8 @@ const questions = [
       "Générer du contenu utile pour attirer et engager les clients",
       "Publier des annonces publicitaires payantes",
       "Optimiser le budget marketing"
-    ]
+    ],
+    correctAnswer: "Générer du contenu utile pour attirer et engager les clients"
   },
   {
     question: "Un KPI est un indicateur qui :",
@@ -73,7 +80,8 @@ const questions = [
       "Est utilisé pour créer du contenu visuel",
       "Indique le nombre d'utilisateurs actifs",
       "Sert à optimiser la sécurité des sites web"
-    ]
+    ],
+    correctAnswer: "Permet de mesurer la performance d'une campagne"
   },
   {
     question: "Le Big Data permet :",
@@ -82,7 +90,8 @@ const questions = [
       "De créer des graphiques interactifs",
       "De concevoir des campagnes visuelles",
       "D'envoyer des newsletters"
-    ]
+    ],
+    correctAnswer: "De collecter et analyser de grandes quantités de données"
   },
   {
     question: "L'objectif principal du SEM est :",
@@ -91,7 +100,8 @@ const questions = [
       "Obtenir du trafic organique",
       "Gagner du trafic payant via des annonces",
       "Améliorer la sécurité des sites web"
-    ]
+    ],
+    correctAnswer: "Gagner du trafic payant via des annonces"
   },
   {
     question: "Qu'est-ce que le SEO ?",
@@ -100,7 +110,8 @@ const questions = [
       "Social Engagement Optimization",
       "Secure Electronic Operations",
       "Strategic Email Outreach"
-    ]
+    ],
+    correctAnswer: "Search Engine Optimization"
   },
   {
     question: "Quelle est la première étape pour optimiser le SEO d'un site web ?",
@@ -109,7 +120,8 @@ const questions = [
       "Réaliser une analyse des mots-clés",
       "Créer une newsletter",
       "Optimiser les annonces sociales"
-    ]
+    ],
+    correctAnswer: "Réaliser une analyse des mots-clés"
   },
   {
     question: "Que signifie CTR dans une campagne marketing digitale ?",
@@ -118,7 +130,8 @@ const questions = [
       "Conversion Tracking Ratio",
       "Client Target Response",
       "Customer Transaction Report"
-    ]
+    ],
+    correctAnswer: "Click Through Rate"
   },
   {
     question: "L'UX (User Experience) se concentre sur :",
@@ -127,7 +140,8 @@ const questions = [
       "L'expérience globale de l'utilisateur",
       "La sécurité des données",
       "Le référencement payant"
-    ]
+    ],
+    correctAnswer: "L'expérience globale de l'utilisateur"
   },
   {
     question: "Le marketing d'influence consiste à :",
@@ -136,7 +150,8 @@ const questions = [
       "Collaborer avec des influenceurs pour promouvoir une marque",
       "Créer du contenu optimisé pour les réseaux sociaux",
       "Concevoir des sites web interactifs"
-    ]
+    ],
+    correctAnswer: "Collaborer avec des influenceurs pour promouvoir une marque"
   },
   {
     question: "Parmi les technologies émergentes suivantes, laquelle est la plus liée à la sécurité des transactions numériques ?",
@@ -145,7 +160,8 @@ const questions = [
       "Blockchain",
       "SEO",
       "SEM"
-    ]
+    ],
+    correctAnswer: "Blockchain"
   }
 ]
 
@@ -154,6 +170,8 @@ export default function AptitudeTest() {
   const [answers, setAnswers] = useState<string[]>(new Array(questions.length).fill(''))
   const [showResults, setShowResults] = useState(false)
   const [studentName, setStudentName] = useState('')
+  const [score, setScore] = useState(0)
+  const router = useRouter()
 
   useEffect(() => {
     const storedInfo = localStorage.getItem('studentInfo')
@@ -173,8 +191,29 @@ export default function AptitudeTest() {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
     } else {
+      const finalScore = calculateScore()
+      setScore(finalScore)
       setShowResults(true)
+      saveResults(finalScore)
     }
+  }
+
+  const calculateScore = () => {
+    return answers.reduce((acc, answer, index) => {
+      return answer === questions[index].correctAnswer ? acc + 1 : acc
+    }, 0)
+  }
+
+  const saveResults = (finalScore: number) => {
+    const result = {
+      studentName,
+      score: finalScore,
+      totalQuestions: questions.length,
+      answers
+    }
+    const existingResults = JSON.parse(localStorage.getItem('testResults') || '[]')
+    existingResults.push(result)
+    localStorage.setItem('testResults', JSON.stringify(existingResults))
   }
 
   const progress = ((currentQuestion + 1) / questions.length) * 100
@@ -183,7 +222,12 @@ export default function AptitudeTest() {
     return (
       <div className="p-8">
         <h2 className="text-2xl font-bold mb-4">Test terminé !</h2>
-        <p>Merci d'avoir complété le test, {studentName}. Vos réponses ont été enregistrées.</p>
+        <p className="mb-4">Merci d'avoir complété le test, {studentName}.</p>
+        <p className="mb-4">Votre score : {score} / {questions.length}</p>
+        <p className="mb-4">Pourcentage : {((score / questions.length) * 100).toFixed(2)}%</p>
+        <Button onClick={() => router.push('/')} className="mt-4">
+          Retour à l'accueil
+        </Button>
       </div>
     )
   }
