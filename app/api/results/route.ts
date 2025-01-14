@@ -13,7 +13,8 @@ export async function POST(request: Request) {
       },
     })
     return NextResponse.json(result)
-  } catch (error) {
+  } catch (err) {
+    console.error('Error creating result:', err)
     return NextResponse.json(
       { error: 'Error creating result' },
       { status: 500 }
@@ -32,7 +33,8 @@ export async function GET() {
       }
     })
     return NextResponse.json(results)
-  } catch (error) {
+  } catch (err) {
+    console.error('Error fetching results:', err)
     return NextResponse.json(
       { error: 'Error fetching results' },
       { status: 500 }
