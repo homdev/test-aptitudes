@@ -16,21 +16,39 @@ import { Button } from "@/components/ui/button"
 import Link from 'next/link'
 
 interface TestResult {
-  studentName: string
+  id: string
   score: number
   totalQuestions: number
-  answers: string[]
+  student: {
+    firstName: string
+    lastName: string
+  }
+  createdAt: string
 }
 
 export default function ProfessorDashboard() {
   const [results, setResults] = useState<TestResult[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const storedResults = localStorage.getItem('testResults')
-    if (storedResults) {
-      setResults(JSON.parse(storedResults))
+    const fetchResults = async () => {
+      try {
+        const response = await fetch('/api/results')
+        const data = await response.json()
+        setResults(data)
+      } catch (error) {
+        console.error('Error fetching results:', error)
+      } finally {
+        setIsLoading(false)
+      }
     }
+
+    fetchResults()
   }, [])
+
+  if (isLoading) {
+    return <div className="p-8 text-center">Chargement...</div>
+  }
 
   return (
     <div className="p-8">
@@ -48,14 +66,16 @@ export default function ProfessorDashboard() {
             <TableHead>Nom de l'étudiant</TableHead>
             <TableHead>Score</TableHead>
             <TableHead>Pourcentage</TableHead>
+            <TableHead>Date</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {results.map((result, index) => (
-            <TableRow key={index}>
-              <TableCell>{result.studentName}</TableCell>
+          {results.map((result) => (
+            <TableRow key={result.id}>
+              <TableCell>{`${result.student.firstName} ${result.student.lastName}`}</TableCell>
               <TableCell>{result.score} / {result.totalQuestions}</TableCell>
               <TableCell>{((result.score / result.totalQuestions) * 100).toFixed(2)}%</TableCell>
+              <TableCell>{new Date(result.createdAt).toLocaleDateString()}</TableCell>
             </TableRow>
           ))}
         </TableBody>

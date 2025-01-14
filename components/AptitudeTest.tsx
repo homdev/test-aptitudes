@@ -171,12 +171,14 @@ export default function AptitudeTest() {
   const [showResults, setShowResults] = useState(false)
   const [studentName, setStudentName] = useState('')
   const [score, setScore] = useState(0)
+  const [studentId, setStudentId] = useState('')
   const router = useRouter()
 
   useEffect(() => {
     const storedInfo = localStorage.getItem('studentInfo')
     if (storedInfo) {
-      const { firstName, lastName } = JSON.parse(storedInfo)
+      const { id, firstName, lastName } = JSON.parse(storedInfo)
+      setStudentId(id)
       setStudentName(`${firstName} ${lastName}`)
     }
   }, [])
@@ -204,16 +206,23 @@ export default function AptitudeTest() {
     }, 0)
   }
 
-  const saveResults = (finalScore: number) => {
-    const result = {
-      studentName,
-      score: finalScore,
-      totalQuestions: questions.length,
-      answers
+  const saveResults = async (finalScore: number) => {
+    try {
+      await fetch('/api/results', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          studentId,
+          score: finalScore,
+          totalQuestions: questions.length,
+          answers
+        }),
+      })
+    } catch (error) {
+      console.error('Error saving results:', error)
     }
-    const existingResults = JSON.parse(localStorage.getItem('testResults') || '[]')
-    existingResults.push(result)
-    localStorage.setItem('testResults', JSON.stringify(existingResults))
   }
 
   const progress = ((currentQuestion + 1) / questions.length) * 100

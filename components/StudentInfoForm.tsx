@@ -12,14 +12,33 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 export default function StudentInfoForm() {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically save the student info to a database or state management system
-    // For now, we'll just store it in localStorage as an example
-    localStorage.setItem('studentInfo', JSON.stringify({ firstName, lastName }))
-    router.push('/test')
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/students', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ firstName, lastName }),
+      })
+      
+      const data = await response.json()
+      localStorage.setItem('studentInfo', JSON.stringify({ 
+        id: data.id,
+        firstName, 
+        lastName 
+      }))
+      router.push('/test')
+    } catch (error) {
+      console.error('Error saving student:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -64,6 +83,7 @@ export default function StudentInfoForm() {
             onClick={handleSubmit}
             className="w-full bg-purple-600 hover:bg-purple-700 text-white"
             disabled={!firstName || !lastName}
+            loading={isLoading}
           >
             Commencer le Test
           </Button>
