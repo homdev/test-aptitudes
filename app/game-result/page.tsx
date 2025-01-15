@@ -19,7 +19,6 @@ interface GameResult {
 export default function GameResultsPage() {
   const [results, setResults] = useState<GameResult[]>([])
   const [score, setScore] = useState(0)
-  const [studentId, setStudentId] = useState('')
 
   useEffect(() => {
     const storedResults = localStorage.getItem('gameResults')
@@ -29,16 +28,13 @@ export default function GameResultsPage() {
       const parsedResults = JSON.parse(storedResults)
       console.log('Nombre de résultats chargés:', parsedResults.length)
       
-      // S'assurer que tous les résultats sont chargés
-      const allResults = parsedResults.map((result: any, index: number) => ({
+      const allResults = parsedResults.map((result: GameResult, index: number) => ({
         scenario: result.scenario || index + 1,
         choice: result.choice || '',
         isCorrect: result.isCorrect || false,
         feedback: result.feedback || ''
       }))
 
-      const { id } = JSON.parse(studentInfo)
-      setStudentId(id)
       setResults(allResults)
       setScore(allResults.filter((r: GameResult) => r.isCorrect).length)
     }

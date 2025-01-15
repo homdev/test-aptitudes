@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button"
 import TopPerformers from '@/components/TopPerformers'
 import Link from 'next/link'
-import { Crown, Medal, Brain, Target } from 'lucide-react'
+import { Brain, Target } from 'lucide-react'
 
 interface TestResult {
   id: string
