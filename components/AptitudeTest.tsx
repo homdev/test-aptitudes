@@ -23,6 +23,7 @@ export default function AptitudeTest() {
   const [studentName, setStudentName] = useState('')
   const [score, setScore] = useState(0)
   const [studentId, setStudentId] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -40,14 +41,24 @@ export default function AptitudeTest() {
     setAnswers(newAnswers)
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentQuestion < aptitudeQuestions.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
     } else {
-      const finalScore = calculateScore()
-      setScore(finalScore)
-      setShowResults(true)
-      saveResults(finalScore)
+      if (isSubmitting) return
+      setIsSubmitting(true)
+
+      try {
+        const finalScore = calculateScore()
+        setScore(finalScore)
+        await saveResults(finalScore)
+        setShowResults(true)
+        
+      } catch (error) {
+        console.error('Error saving results:', error)
+      } finally {
+        setIsSubmitting(false)
+      }
     }
   }
 
@@ -58,8 +69,13 @@ export default function AptitudeTest() {
   }
 
   const saveResults = async (finalScore: number) => {
+    if (!studentId) {
+      console.error('StudentId not found')
+      return
+    }
+
     try {
-      await fetch('/api/results', {
+      const response = await fetch('/api/results/aptitude', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,8 +87,13 @@ export default function AptitudeTest() {
           answers
         }),
       })
+
+      if (!response.ok) {
+        throw new Error('Failed to save results')
+      }
     } catch (error) {
       console.error('Error saving results:', error)
+      throw error
     }
   }
 
@@ -196,27 +217,7 @@ export default function AptitudeTest() {
                   transition={{ delay: 1 }}
                 >
                   <Button 
-                    onClick={async () => {
-                      try {
-                        // Sauvegarder le résultat du test d'aptitude
-                        await fetch('/api/results', {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                          },
-                          body: JSON.stringify({
-                            score,
-                            totalQuestions: aptitudeQuestions.length,
-                            answers: answers,
-                            studentId: studentId,
-                          }),
-                        });
-                        // Rediriger vers le test de scénarios
-                        router.push('/game');
-                      } catch (error) {
-                        console.error('Error saving results:', error);
-                      }
-                    }}
+                    onClick={() => router.push('/game')}
                     className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-3 rounded-xl transition-all transform hover:scale-105 flex items-center gap-2"
                   >
                     <Trophy className="w-5 h-5" />

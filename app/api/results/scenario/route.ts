@@ -19,6 +19,21 @@ export async function POST(request: Request) {
       )
     }
 
+    // Vérifier si un résultat existe déjà pour cet étudiant
+    const existingResult = await prisma.scenarioResult.findFirst({
+      where: {
+        studentId: body.studentId,
+        createdAt: {
+          gte: new Date(Date.now() - 5000) // Dans les 5 dernières secondes
+        }
+      }
+    })
+
+    if (existingResult) {
+      console.log('Résultat déjà existant, éviter le doublon')
+      return NextResponse.json(existingResult)
+    }
+
     const result = await prisma.scenarioResult.create({
       data: {
         score: body.score,

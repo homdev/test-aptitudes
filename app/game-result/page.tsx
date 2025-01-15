@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { Trophy, Star, Home, Sparkles, CheckCircle2, XCircle } from 'lucide-react'
+import { Trophy, Home, Sparkles, CheckCircle2, XCircle } from 'lucide-react'
 
 interface GameResult {
   scenario: number
@@ -103,12 +103,12 @@ export default function GameResultsPage() {
                 Retour à l'accueil 🏠
               </Button>
             </Link>
-            <Link href="/test">
+            {/* <Link href="/test">
               <Button className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2">
                 <Star className="w-4 h-4" />
                 Relancer 🔄
               </Button>
-            </Link>
+            </Link> */}
           </CardFooter>
         </Card>
       </motion.div>

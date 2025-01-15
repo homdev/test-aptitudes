@@ -14,6 +14,7 @@ export default function InteractiveGame() {
   const [currentScenario, setCurrentScenario] = useState(0)
   const [choices, setChoices] = useState<string[]>([])
   const [showFeedback, setShowFeedback] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [studentId, setStudentId] = useState('')
   const router = useRouter()
 
@@ -37,21 +38,24 @@ export default function InteractiveGame() {
       setCurrentScenario(currentScenario + 1)
       setShowFeedback(false)
     } else {
-      const correctAnswers = choices.filter(
-        (choice, index) => choice === scenarios[index].correctAnswer
-      ).length
-
-      // Sauvegarder les résultats
-      const gameResults = scenarios.map((scenario, index) => ({
-        scenario: scenario.id,
-        choice: choices[index],
-        isCorrect: choices[index] === scenario.correctAnswer,
-        feedback: scenario.options.find(opt => opt.id === choices[index])?.feedback || ''
-      }))
-
-      localStorage.setItem('gameResults', JSON.stringify(gameResults))
+      if (isSubmitting) return
+      setIsSubmitting(true)
 
       try {
+        const correctAnswers = choices.filter(
+          (choice, index) => choice === scenarios[index].correctAnswer
+        ).length
+
+        // Sauvegarder les résultats
+        const gameResults = scenarios.map((scenario, index) => ({
+          scenario: scenario.id,
+          choice: choices[index],
+          isCorrect: choices[index] === scenario.correctAnswer,
+          feedback: scenario.options.find(opt => opt.id === choices[index])?.feedback || ''
+        }))
+
+        localStorage.setItem('gameResults', JSON.stringify(gameResults))
+
         if (!studentId) {
           console.error('StudentId not found')
           return
@@ -78,6 +82,8 @@ export default function InteractiveGame() {
         router.push('/game-result')
       } catch (error) {
         console.error('Error saving scenario results:', error)
+      } finally {
+        setIsSubmitting(false)
       }
     }
   }

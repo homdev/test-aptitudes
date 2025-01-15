@@ -14,12 +14,16 @@ datasource db {
 }
 
 model Student {
-  id        String   @id @default(cuid())
-  firstName String
-  lastName  String
-  aptitudeResults   AptitudeResult[]
-  scenarioResults   ScenarioResult[]
-  createdAt DateTime @default(now())
+  id              String   @id @default(cuid())
+  firstName       String
+  lastName        String
+  aptitudeResults AptitudeResult[]
+  scenarioResults ScenarioResult[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt
+  lastLoginAt     DateTime @default(now())
+
+  @@unique([firstName, lastName])
 }
 
 model AptitudeResult {

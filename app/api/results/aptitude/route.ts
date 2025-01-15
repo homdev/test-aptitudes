@@ -4,6 +4,22 @@ import { NextResponse } from 'next/server'
 export async function POST(request: Request) {
   try {
     const body = await request.json()
+
+    // Vérifier si un résultat existe déjà pour cet étudiant
+    const existingResult = await prisma.aptitudeResult.findFirst({
+      where: {
+        studentId: body.studentId,
+        createdAt: {
+          gte: new Date(Date.now() - 5000) // Dans les 5 dernières secondes
+        }
+      }
+    })
+
+    if (existingResult) {
+      console.log('Résultat d\'aptitude déjà existant, éviter le doublon')
+      return NextResponse.json(existingResult)
+    }
+
     const result = await prisma.aptitudeResult.create({
       data: {
         score: body.score,

@@ -14,11 +14,14 @@ export default function StudentInfoForm() {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError('')
+
     try {
       const response = await fetch('/api/students', {
         method: 'POST',
@@ -29,14 +32,30 @@ export default function StudentInfoForm() {
       })
       
       const data = await response.json()
-      localStorage.setItem('studentInfo', JSON.stringify({ 
+
+      if (!response.ok) {
+        if (response.status === 403) {
+          setError('Vous avez déjà passé le test. Vous ne pouvez pas le repasser.')
+          return
+        }
+        throw new Error('Erreur lors de la gestion de l\'étudiant')
+      }
+
+      // Stocker les informations de session
+      const sessionData = { 
         id: data.id,
-        firstName, 
-        lastName 
-      }))
+        firstName: data.firstName, 
+        lastName: data.lastName,
+        sessionStarted: new Date().toISOString()
+      }
+
+      localStorage.setItem('studentInfo', JSON.stringify(sessionData))
+      document.cookie = `session=${data.id}; path=/`
       router.push('/test')
+
     } catch (error) {
-      console.error('Error saving student:', error)
+      console.error('Error managing student:', error)
+      setError('Une erreur est survenue. Veuillez réessayer.')
     } finally {
       setIsLoading(false)
     }
@@ -50,13 +69,20 @@ export default function StudentInfoForm() {
     >
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Informations de l'Élève</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">
+            Informations de l'Élève
+          </CardTitle>
           <CardDescription className="text-center">
             Veuillez saisir vos informations avant de commencer le test
           </CardDescription>
+          {error && (
+            <div className="text-red-500 text-center mt-2">
+              {error}
+            </div>
+          )}
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form id="studentForm" onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="firstName">Prénom</Label>
               <Input
@@ -81,7 +107,8 @@ export default function StudentInfoForm() {
         </CardContent>
         <CardFooter>
           <Button 
-            onClick={handleSubmit}
+            form="studentForm"
+            type="submit"
             className="w-full bg-purple-600 hover:bg-purple-700 text-white"
             disabled={!firstName || !lastName || isLoading}
           >

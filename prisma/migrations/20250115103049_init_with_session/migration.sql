@@ -1,14 +1,14 @@
-/*
-  Warnings:
+-- CreateTable
+CREATE TABLE "Student" (
+    "id" TEXT NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastLoginAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-  - You are about to drop the `Result` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE "Result" DROP CONSTRAINT "Result_studentId_fkey";
-
--- DropTable
-DROP TABLE "Result";
+    CONSTRAINT "Student_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "AptitudeResult" (
@@ -33,6 +33,9 @@ CREATE TABLE "ScenarioResult" (
 
     CONSTRAINT "ScenarioResult_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Student_firstName_lastName_key" ON "Student"("firstName", "lastName");
 
 -- AddForeignKey
 ALTER TABLE "AptitudeResult" ADD CONSTRAINT "AptitudeResult_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
