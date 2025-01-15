@@ -14,9 +14,9 @@ export async function POST(request: Request) {
     })
     return NextResponse.json(result)
   } catch (err) {
-    console.error('Error creating result:', err)
+    console.error('Error creating aptitude result:', err)
     return NextResponse.json(
-      { error: 'Error creating result' },
+      { error: 'Error creating aptitude result' },
       { status: 500 }
     )
   }
@@ -34,9 +34,9 @@ export async function GET() {
     })
     return NextResponse.json(results)
   } catch (err) {
-    console.error('Error fetching results:', err)
+    console.error('Error fetching aptitude results:', err)
     return NextResponse.json(
-      { error: 'Error fetching results' },
+      { error: 'Error fetching aptitude results' },
       { status: 500 }
     )
   }

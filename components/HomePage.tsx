@@ -5,21 +5,33 @@ import { motion } from 'framer-motion'
 import { ArrowRightIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import RetroGrid from '@/components/ui/retro-grid'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-blue-500 flex flex-col justify-center items-center p-4 text-white">
+    <div className="relative min-h-screen bg-gradient-to-br from-purple-600 to-blue-500 flex flex-col justify-center items-center p-4 text-white overflow-hidden">
+      {/* RetroGrid en arrière-plan */}
+      <RetroGrid 
+        className="z-0" 
+        opacity={0.4}
+        cellSize={40}
+        angle={55}
+        lightLineColor="rgba(255,255,255,0.3)"
+        darkLineColor="rgba(255,255,255,0.3)"
+      />
+
+      {/* Contenu principal */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="text-center"
+        className="text-center relative z-10"
       >
-        <h1 className="text-5xl md:text-7xl font-bold mb-6">
+        <h1 className="text-5xl md:text-7xl font-bold mb-6 uppercase">
           Test d'Aptitudes
         </h1>
         <p className="text-xl md:text-2xl mb-8 max-w-2xl">
-          Évaluez vos compétences en Communication Digitale et E-influence
+          Évaluez vos compétences en Communication Digitale <br /> & E-influence
         </p>
         <div className="space-x-4">
           <Link href="/start">
@@ -33,11 +45,12 @@ export default function HomePage() {
           </Link>
         </div>
       </motion.div>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5, duration: 0.8 }}
-        className="mt-16 text-sm text-purple-200"
+        className="mt-16 text-sm text-purple-200 relative z-10"
       >
         Durée estimée : 30-45 minutes
       </motion.div>

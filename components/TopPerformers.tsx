@@ -5,7 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 interface TopPerformer {
   id: string
   score: number
-  totalQuestions: number
+  totalQuestions?: number
+  totalScenarios?: number
   student: {
     firstName: string
     lastName: string
@@ -14,9 +15,10 @@ interface TopPerformer {
 
 interface TopPerformersProps {
   performers: TopPerformer[]
+  testType: 'aptitude' | 'scenario'
 }
 
-export default function TopPerformers({ performers }: TopPerformersProps) {
+export default function TopPerformers({ performers, testType }: TopPerformersProps) {
   const getBadge = (index: number) => {
     switch (index) {
       case 0:
@@ -30,6 +32,12 @@ export default function TopPerformers({ performers }: TopPerformersProps) {
     }
   }
 
+  const getTotal = (performer: TopPerformer) => {
+    return testType === 'aptitude' 
+      ? performer?.totalQuestions ?? 0 
+      : performer?.totalScenarios ?? 0
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       {performers.map((performer, index) => (
@@ -37,6 +45,9 @@ export default function TopPerformers({ performers }: TopPerformersProps) {
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {index === 0 ? '1er' : index === 1 ? '2ème' : '3ème'} Place
+              <span className="ml-2 text-xs text-gray-500">
+                {testType === 'aptitude' ? "Test d'Aptitude" : "Scénarios"}
+              </span>
             </CardTitle>
             {getBadge(index)}
           </CardHeader>
@@ -49,7 +60,7 @@ export default function TopPerformers({ performers }: TopPerformersProps) {
               <div>
                 <p className="text-lg font-semibold">{`${performer.student.firstName} ${performer.student.lastName}`}</p>
                 <p className="text-sm text-muted-foreground">
-                  Score: {performer.score} / {performer.totalQuestions} ({((performer.score / performer.totalQuestions) * 100).toFixed(2)}%)
+                  Score: {performer.score} / {getTotal(performer)} ({((performer.score / getTotal(performer)) * 100).toFixed(2)}%)
                 </p>
               </div>
             </div>

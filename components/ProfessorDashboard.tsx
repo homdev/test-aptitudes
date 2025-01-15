@@ -3,6 +3,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Table,
   TableBody,
@@ -15,12 +16,13 @@ import {
 import { Button } from "@/components/ui/button"
 import TopPerformers from '@/components/TopPerformers'
 import Link from 'next/link'
-import { Crown, Medal } from 'lucide-react'
+import { Crown, Medal, Brain, Target } from 'lucide-react'
 
 interface TestResult {
   id: string
   score: number
-  totalQuestions: number
+  totalQuestions?: number
+  totalScenarios?: number
   student: {
     firstName: string
     lastName: string
@@ -29,15 +31,25 @@ interface TestResult {
 }
 
 export default function ProfessorDashboard() {
-  const [results, setResults] = useState<TestResult[]>([])
+  const [aptitudeResults, setAptitudeResults] = useState<TestResult[]>([])
+  const [scenarioResults, setScenarioResults] = useState<TestResult[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = await fetch('/api/results')
-        const data = await response.json()
-        setResults(data)
+        const [aptitudeResponse, scenarioResponse] = await Promise.all([
+          fetch('/api/results/aptitude'),
+          fetch('/api/results/scenario')
+        ])
+        
+        const aptitudeData = await aptitudeResponse.json()
+        const scenarioData = await scenarioResponse.json()
+        
+        console.log('Nombre de scénarios reçus:', scenarioData.length)
+        
+        setAptitudeResults(aptitudeData)
+        setScenarioResults(scenarioData)
       } catch (error) {
         console.error('Error fetching results:', error)
       } finally {
@@ -52,19 +64,6 @@ export default function ProfessorDashboard() {
     return <div className="p-8 text-center">Chargement...</div>
   }
 
-  const getRankBadge = (index: number) => {
-    switch (index) {
-      case 0:
-        return <Crown className="w-6 h-6 text-yellow-500" />
-      case 1:
-        return <Medal className="w-6 h-6 text-gray-400" />
-      case 2:
-        return <Medal className="w-6 h-6 text-amber-600" />
-      default:
-        return null
-    }
-  }
-
   return (
     <div className="p-8">
       <div className="flex justify-between items-center mb-6">
@@ -74,42 +73,80 @@ export default function ProfessorDashboard() {
         </Link>
       </div>
 
-      {results.length > 0 && (
-        <>
-          <h2 className="text-2xl font-semibold mb-4">Top 3 Performers</h2>
-          <TopPerformers performers={results.slice(0, 3)} />
-        </>
-      )}
+      <Tabs defaultValue="aptitude" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-8">
+          <TabsTrigger value="aptitude" className="flex items-center gap-2">
+            <Brain className="w-4 h-4" />
+            Test d'Aptitude
+          </TabsTrigger>
+          <TabsTrigger value="scenario" className="flex items-center gap-2">
+            <Target className="w-4 h-4" />
+            Scénarios Interactifs
+          </TabsTrigger>
+        </TabsList>
 
-<Table>
-        <TableCaption>Classement complet des étudiants</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">Rang</TableHead>
-            <TableHead>Nom de l'étudiant</TableHead>
-            <TableHead>Score</TableHead>
-            <TableHead>Pourcentage</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {results.map((result, index) => (
-            <TableRow key={index} className={index < 3 ? 'font-semibold' : ''}>
-              <TableCell className="flex items-center space-x-2">
-                <span>{index + 1}</span>
-                {getRankBadge(index)}
-              </TableCell>
-              <TableCell>{`${result.student.firstName} ${result.student.lastName}`}</TableCell>
-              <TableCell>{result.score} / {result.totalQuestions}</TableCell>
-              <TableCell>{((result.score / result.totalQuestions) * 100).toFixed(2)}%</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+        <TabsContent value="aptitude">
+          {aptitudeResults.length > 0 && (
+            <>
+              <h2 className="text-2xl font-semibold mb-4">Top 3 - Test d'Aptitude</h2>
+              <TopPerformers performers={aptitudeResults.slice(0, 3)} testType="aptitude" />
+              <ResultsTable results={aptitudeResults} testType="aptitude" />
+            </>
+          )}
+        </TabsContent>
 
-      {results.length === 0 && (
-        <p className="text-center mt-4 text-gray-500">Aucun résultat de test disponible pour le moment.</p>
-      )}
+        <TabsContent value="scenario">
+          {scenarioResults.length > 0 && (
+            <>
+              <h2 className="text-2xl font-semibold mb-4">Top 3 - Scénarios Interactifs</h2>
+              <TopPerformers performers={scenarioResults.slice(0, 3)} testType="scenario" />
+              <ResultsTable results={scenarioResults} testType="scenario" />
+            </>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
+  )
+}
+
+function ResultsTable({ results, testType }: { results: TestResult[], testType: 'aptitude' | 'scenario' }) {
+  const getTotal = (result: TestResult) => {
+    return testType === 'aptitude' 
+      ? result?.totalQuestions ?? 0 
+      : result?.totalScenarios ?? 0
+  }
+
+  return (
+    <Table>
+      <TableCaption>
+        Classement complet - {testType === 'aptitude' ? "Test d'Aptitude" : "Scénarios Interactifs"}
+      </TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[100px]">Rang</TableHead>
+          <TableHead>Nom de l'étudiant</TableHead>
+          <TableHead>Score</TableHead>
+          <TableHead>Pourcentage</TableHead>
+          <TableHead>Date</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {results.map((result, index) => (
+          <TableRow key={result.id}>
+            <TableCell className="flex items-center space-x-2">
+              <span>{index + 1}</span>
+              {index < 3 && (
+                <span>{index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}</span>
+              )}
+            </TableCell>
+            <TableCell>{`${result.student.firstName} ${result.student.lastName}`}</TableCell>
+            <TableCell>{result.score} / {getTotal(result)}</TableCell>
+            <TableCell>{((result.score / getTotal(result)) * 100).toFixed(2)}%</TableCell>
+            <TableCell>{new Date(result.createdAt).toLocaleDateString()}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   )
 }
 
