@@ -16,7 +16,10 @@ import {
 import { Button } from "@/components/ui/button"
 import TopPerformers from '@/components/TopPerformers'
 import Link from 'next/link'
-import { Brain, Target } from 'lucide-react'
+import { Brain, Target, FileSpreadsheet, FileDown } from 'lucide-react'
+import * as XLSX from 'xlsx'
+import { jsPDF } from 'jspdf'
+import 'jspdf-autotable'
 
 interface TestResult {
   id: string
@@ -28,6 +31,24 @@ interface TestResult {
     lastName: string
   }
   createdAt: string
+}
+
+// Ajoutez ces interfaces pour TypeScript
+interface AutoTableOptions {
+  head: string[][];
+  body: (string | number)[][];
+  startY: number;
+  theme: 'grid' | 'striped' | 'plain';
+  styles: {
+    fontSize: number;
+    cellPadding: number;
+  };
+}
+
+declare module 'jspdf' {
+  interface jsPDF {
+    autoTable: (options: AutoTableOptions) => jsPDF;
+  }
 }
 
 export default function ProfessorDashboard() {
@@ -60,6 +81,47 @@ export default function ProfessorDashboard() {
     fetchResults()
   }, [])
 
+  const exportToExcel = (data: TestResult[], testType: string) => {
+    const worksheet = XLSX.utils.json_to_sheet(
+      data.map((result, index) => ({
+        Rang: index + 1,
+        Nom: `${result.student.firstName} ${result.student.lastName}`,
+        Score: result.score,
+        Total: testType === 'aptitude' ? result.totalQuestions : result.totalScenarios,
+        Pourcentage: `${((result.score / (testType === 'aptitude' ? result.totalQuestions! : result.totalScenarios!)) * 100).toFixed(2)}%`,
+        Date: new Date(result.createdAt).toLocaleDateString()
+      }))
+    );
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, `Résultats ${testType}`);
+    XLSX.writeFile(workbook, `classement_${testType}_${new Date().toISOString().split('T')[0]}.xlsx`);
+  };
+
+  const exportToPDF = (data: TestResult[], testType: string) => {
+    const doc = new jsPDF();
+    
+    const tableColumn = ["Rang", "Nom", "Score", "Pourcentage", "Date"];
+    const tableRows = data.map((result, index) => [
+      index + 1,
+      `${result.student.firstName} ${result.student.lastName}`,
+      `${result.score}/${testType === 'aptitude' ? result.totalQuestions : result.totalScenarios}`,
+      `${((result.score / (testType === 'aptitude' ? result.totalQuestions! : result.totalScenarios!)) * 100).toFixed(2)}%`,
+      new Date(result.createdAt).toLocaleDateString()
+    ]);
+
+    doc.text(`Classement - ${testType === 'aptitude' ? "Test d'Aptitude" : "Scénarios Interactifs"}`, 14, 15);
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+      theme: 'grid',
+      styles: { fontSize: 8, cellPadding: 1 }
+    });
+
+    doc.save(`classement_${testType}_${new Date().toISOString().split('T')[0]}.pdf`);
+  };
+
   if (isLoading) {
     return <div className="p-8 text-center">Chargement...</div>
   }
@@ -88,7 +150,27 @@ export default function ProfessorDashboard() {
         <TabsContent value="aptitude">
           {aptitudeResults.length > 0 && (
             <>
-              <h2 className="text-2xl font-semibold mb-4">Top 3 - Test d'Aptitude</h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-semibold">Top 3 - Test d'Aptitude</h2>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => exportToExcel(aptitudeResults, 'aptitude')}
+                    variant="outline"
+                    className="flex items-center gap-2 hover:bg-green-50"
+                  >
+                    <FileSpreadsheet className="w-4 h-4 text-green-600" />
+                    <span className="hidden sm:inline">Exporter Excel</span>
+                  </Button>
+                  <Button
+                    onClick={() => exportToPDF(aptitudeResults, 'aptitude')}
+                    variant="outline"
+                    className="flex items-center gap-2 hover:bg-red-50"
+                  >
+                    <FileDown className="w-4 h-4 text-red-600" />
+                    <span className="hidden sm:inline">Exporter PDF</span>
+                  </Button>
+                </div>
+              </div>
               <TopPerformers performers={aptitudeResults.slice(0, 3)} testType="aptitude" />
               <ResultsTable results={aptitudeResults} testType="aptitude" />
             </>
@@ -98,7 +180,27 @@ export default function ProfessorDashboard() {
         <TabsContent value="scenario">
           {scenarioResults.length > 0 && (
             <>
-              <h2 className="text-2xl font-semibold mb-4">Top 3 - Scénarios Interactifs</h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-semibold">Top 3 - Scénarios Interactifs</h2>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => exportToExcel(scenarioResults, 'scenario')}
+                    variant="outline"
+                    className="flex items-center gap-2 hover:bg-green-50"
+                  >
+                    <FileSpreadsheet className="w-4 h-4 text-green-600" />
+                    <span className="hidden sm:inline">Exporter Excel</span>
+                  </Button>
+                  <Button
+                    onClick={() => exportToPDF(scenarioResults, 'scenario')}
+                    variant="outline"
+                    className="flex items-center gap-2 hover:bg-red-50"
+                  >
+                    <FileDown className="w-4 h-4 text-red-600" />
+                    <span className="hidden sm:inline">Exporter PDF</span>
+                  </Button>
+                </div>
+              </div>
               <TopPerformers performers={scenarioResults.slice(0, 3)} testType="scenario" />
               <ResultsTable results={scenarioResults} testType="scenario" />
             </>
