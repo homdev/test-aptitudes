@@ -20,6 +20,13 @@ import { Brain, Target, FileSpreadsheet, FileDown } from 'lucide-react'
 import * as XLSX from 'xlsx'
 import { jsPDF } from 'jspdf'
 import 'jspdf-autotable'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface TestResult {
   id: string
@@ -29,6 +36,7 @@ interface TestResult {
   student: {
     firstName: string
     lastName: string
+    class: string
   }
   createdAt: string
 }
@@ -54,6 +62,7 @@ declare module 'jspdf' {
 export default function ProfessorDashboard() {
   const [aptitudeResults, setAptitudeResults] = useState<TestResult[]>([])
   const [scenarioResults, setScenarioResults] = useState<TestResult[]>([])
+  const [selectedClass, setSelectedClass] = useState<string>('all')
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -122,6 +131,11 @@ export default function ProfessorDashboard() {
     doc.save(`classement_${testType}_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
+  const filterResultsByClass = (results: TestResult[]) => {
+    if (selectedClass === 'all') return results
+    return results.filter(result => result.student.class === selectedClass)
+  }
+
   if (isLoading) {
     return <div className="p-8 text-center">Chargement...</div>
   }
@@ -130,9 +144,27 @@ export default function ProfessorDashboard() {
     <div className="p-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-purple-700">Tableau de Bord</h1>
-        <Link href="/">
-          <Button variant="outline">Retour à l'accueil</Button>
-        </Link>
+        <div className="flex items-center gap-4">
+          <div className="w-[200px]">
+            <Select
+              value={selectedClass}
+              onValueChange={setSelectedClass}
+            >
+              <SelectTrigger className="w-full bg-white">
+                <SelectValue placeholder="Filtrer par classe" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Toutes les classes</SelectItem>
+                <SelectItem value="bachelor3">Bachelor 3</SelectItem>
+                <SelectItem value="master1">Master 1</SelectItem>
+                <SelectItem value="master2">Master 2</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Link href="/">
+            <Button variant="outline">Retour à l'accueil</Button>
+          </Link>
+        </div>
       </div>
 
       <Tabs defaultValue="aptitude" className="w-full">
@@ -151,10 +183,13 @@ export default function ProfessorDashboard() {
           {aptitudeResults.length > 0 && (
             <>
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-semibold">Top 3 - Test d'Aptitude</h2>
+                <h2 className="text-2xl font-semibold">
+                  Top 3 - Test d'Aptitude
+                  {selectedClass !== 'all' && ` - ${selectedClass.charAt(0).toUpperCase() + selectedClass.slice(1)}`}
+                </h2>
                 <div className="flex gap-3">
                   <Button
-                    onClick={() => exportToExcel(aptitudeResults, 'aptitude')}
+                    onClick={() => exportToExcel(filterResultsByClass(aptitudeResults), 'aptitude')}
                     variant="outline"
                     className="flex items-center gap-2 hover:bg-green-50"
                   >
@@ -162,7 +197,7 @@ export default function ProfessorDashboard() {
                     <span className="hidden sm:inline">Exporter Excel</span>
                   </Button>
                   <Button
-                    onClick={() => exportToPDF(aptitudeResults, 'aptitude')}
+                    onClick={() => exportToPDF(filterResultsByClass(aptitudeResults), 'aptitude')}
                     variant="outline"
                     className="flex items-center gap-2 hover:bg-red-50"
                   >
@@ -171,8 +206,8 @@ export default function ProfessorDashboard() {
                   </Button>
                 </div>
               </div>
-              <TopPerformers performers={aptitudeResults.slice(0, 3)} testType="aptitude" />
-              <ResultsTable results={aptitudeResults} testType="aptitude" />
+              <TopPerformers performers={filterResultsByClass(aptitudeResults).slice(0, 3)} testType="aptitude" />
+              <ResultsTable results={filterResultsByClass(aptitudeResults)} testType="aptitude" />
             </>
           )}
         </TabsContent>
@@ -181,10 +216,13 @@ export default function ProfessorDashboard() {
           {scenarioResults.length > 0 && (
             <>
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-semibold">Top 3 - Scénarios Interactifs</h2>
+                <h2 className="text-2xl font-semibold">
+                  Top 3 - Scénarios Interactifs
+                  {selectedClass !== 'all' && ` - ${selectedClass.charAt(0).toUpperCase() + selectedClass.slice(1)}`}
+                </h2>
                 <div className="flex gap-3">
                   <Button
-                    onClick={() => exportToExcel(scenarioResults, 'scenario')}
+                    onClick={() => exportToExcel(filterResultsByClass(scenarioResults), 'scenario')}
                     variant="outline"
                     className="flex items-center gap-2 hover:bg-green-50"
                   >
@@ -192,7 +230,7 @@ export default function ProfessorDashboard() {
                     <span className="hidden sm:inline">Exporter Excel</span>
                   </Button>
                   <Button
-                    onClick={() => exportToPDF(scenarioResults, 'scenario')}
+                    onClick={() => exportToPDF(filterResultsByClass(scenarioResults), 'scenario')}
                     variant="outline"
                     className="flex items-center gap-2 hover:bg-red-50"
                   >
@@ -201,8 +239,8 @@ export default function ProfessorDashboard() {
                   </Button>
                 </div>
               </div>
-              <TopPerformers performers={scenarioResults.slice(0, 3)} testType="scenario" />
-              <ResultsTable results={scenarioResults} testType="scenario" />
+              <TopPerformers performers={filterResultsByClass(scenarioResults).slice(0, 3)} testType="scenario" />
+              <ResultsTable results={filterResultsByClass(scenarioResults)} testType="scenario" />
             </>
           )}
         </TabsContent>
@@ -227,6 +265,7 @@ function ResultsTable({ results, testType }: { results: TestResult[], testType: 
         <TableRow>
           <TableHead className="w-[100px]">Rang</TableHead>
           <TableHead>Nom de l'étudiant</TableHead>
+          <TableHead>Classe</TableHead>
           <TableHead>Score</TableHead>
           <TableHead>Pourcentage</TableHead>
           <TableHead>Date</TableHead>
@@ -242,6 +281,7 @@ function ResultsTable({ results, testType }: { results: TestResult[], testType: 
               )}
             </TableCell>
             <TableCell>{`${result.student.firstName} ${result.student.lastName}`}</TableCell>
+            <TableCell className="capitalize">{result.student.class}</TableCell>
             <TableCell>{result.score} / {getTotal(result)}</TableCell>
             <TableCell>{((result.score / getTotal(result)) * 100).toFixed(2)}%</TableCell>
             <TableCell>{new Date(result.createdAt).toLocaleDateString()}</TableCell>

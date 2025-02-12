@@ -50,6 +50,7 @@ export async function POST(request: Request) {
       data: {
         firstName: body.firstName,
         lastName: body.lastName,
+        class: body.class,
       },
     })
     

@@ -9,10 +9,18 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
 import { Loader2 } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export default function StudentInfoForm() {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
+  const [studentClass, setStudentClass] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
@@ -28,7 +36,7 @@ export default function StudentInfoForm() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ firstName, lastName }),
+        body: JSON.stringify({ firstName, lastName, class: studentClass }),
       })
       
       const data = await response.json()
@@ -103,6 +111,23 @@ export default function StudentInfoForm() {
                 required
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="class">Classe</Label>
+              <Select
+                required
+                value={studentClass}
+                onValueChange={setStudentClass}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Sélectionnez votre classe" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="bachelor3">Bachelor 3</SelectItem>
+                  <SelectItem value="master1">Master 1</SelectItem>
+                  <SelectItem value="master2">Master 2</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </form>
         </CardContent>
         <CardFooter>
@@ -110,7 +135,7 @@ export default function StudentInfoForm() {
             form="studentForm"
             type="submit"
             className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-            disabled={!firstName || !lastName || isLoading}
+            disabled={!firstName || !lastName || !studentClass || isLoading}
           >
             {isLoading ? (
               <>

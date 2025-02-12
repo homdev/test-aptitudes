@@ -17,6 +17,7 @@ model Student {
   id              String   @id @default(cuid())
   firstName       String
   lastName        String
+  class           String
   aptitudeResults AptitudeResult[]
   scenarioResults ScenarioResult[]
   createdAt       DateTime @default(now())
